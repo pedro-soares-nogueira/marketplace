@@ -1,46 +1,33 @@
 import {
   useFonts,
-  Poppins_400Regular,
   Poppins_500Medium,
   Poppins_600SemiBold,
   Poppins_700Bold,
-  Poppins_800ExtraBold,
   Poppins_900Black,
 } from "@expo-google-fonts/poppins"
-import { StyleSheet, Text, View, StatusBar } from "react-native"
+import { NativeBaseProvider } from "native-base"
+import { StatusBar } from "react-native"
+import Loading from "./src/components/Loading"
+import Routes from "./src/routes"
+import SingIn from "./src/screens/SingIn"
+import SingUp from "./src/screens/SingUp"
+import { theme } from "./src/themes/theme"
 
 export default function App() {
   const [fontsLoaded] = useFonts({
-    Poppins_400Regular,
     Poppins_500Medium,
     Poppins_600SemiBold,
     Poppins_700Bold,
-    Poppins_800ExtraBold,
     Poppins_900Black,
   })
   return (
-    <View style={styles.container}>
+    <NativeBaseProvider theme={theme}>
       <StatusBar
         barStyle={"dark-content"}
         backgroundColor="transparent"
         translucent
       />
-      {fontsLoaded ? (
-        <Text style={{ fontFamily: "Poppins_700Bold" }}>
-          Open up App.tsx to start working on your app!
-        </Text>
-      ) : (
-        <View />
-      )}
-    </View>
+      {fontsLoaded ? <Routes /> : <Loading />}
+    </NativeBaseProvider>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-})

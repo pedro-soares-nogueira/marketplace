@@ -1,6 +1,14 @@
 import { useNavigation } from "@react-navigation/native"
-import { Box, Center, Heading, Text, ScrollView } from "native-base"
-import React from "react"
+import {
+  Box,
+  Center,
+  Heading,
+  Text,
+  ScrollView,
+  Icon,
+  Pressable,
+} from "native-base"
+import React, { useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import LogoSVG from "../assets/logo_main.svg"
 import Button from "../components/Button"
@@ -8,6 +16,7 @@ import Input from "../components/Input"
 import AuthNavigatorRoutesProps from "../routes/auth.routes"
 import * as yup from "yup"
 import { yupResolver } from "@hookform/resolvers/yup"
+import { MaterialIcons } from "@expo/vector-icons"
 
 type FormSingInProps = {
   email: string
@@ -20,6 +29,7 @@ const singInSchema = yup.object({
 })
 
 const SingIn = () => {
+  const [show, setShow] = useState(false)
   const navigation = useNavigation<AuthNavigatorRoutesProps>()
 
   const {
@@ -29,8 +39,6 @@ const SingIn = () => {
   } = useForm<FormSingInProps>({
     resolver: yupResolver(singInSchema),
   })
-
-  console.log(errors.email, errors.password)
 
   const handleNewAccount = () => {
     navigation.navigate("signUp")
@@ -81,9 +89,23 @@ const SingIn = () => {
               render={({ field: { onChange } }) => (
                 <Input
                   placeholder="Senha"
-                  secureTextEntry
                   onChangeText={onChange}
                   errorMessage={errors.email?.message}
+                  type={show ? "text" : "password"}
+                  InputRightElement={
+                    <Pressable onPress={() => setShow(!show)}>
+                      <Icon
+                        as={
+                          <MaterialIcons
+                            name={show ? "visibility" : "visibility-off"}
+                          />
+                        }
+                        size={5}
+                        mr="2"
+                        color="muted.400"
+                      />
+                    </Pressable>
+                  }
                 />
               )}
             />

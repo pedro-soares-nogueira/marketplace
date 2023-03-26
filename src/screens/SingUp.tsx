@@ -1,6 +1,6 @@
 import { useNavigation } from "@react-navigation/native"
 import { Center, Heading, Box, Text, ScrollView, Icon } from "native-base"
-import React from "react"
+import React, { useState } from "react"
 import LogoSVG from "../assets/logo_main.svg"
 import Button from "../components/Button"
 import Input from "../components/Input"
@@ -8,12 +8,31 @@ import UserPhoto from "../components/UserPhoto"
 import { MaterialIcons } from "@expo/vector-icons"
 import { TouchableOpacity } from "react-native"
 import defaultImageUserPhoto from "../assets/avatar.png"
+import * as ImagePicker from "expo-image-picker"
 
 const SingUp = () => {
+  const [userPhoto, setUserPhoto] = useState("")
   const navigation = useNavigation()
 
   const handleGoBack = () => {
     navigation.goBack()
+  }
+
+  const handleUserImageSelect = async () => {
+    const photoSelected = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1,
+      aspect: [4, 4],
+      allowsEditing: true,
+    })
+
+    if (photoSelected.canceled) {
+      return
+    }
+
+    if (photoSelected.assets) {
+      setUserPhoto(photoSelected.assets[0].uri)
+    }
   }
 
   return (
@@ -39,11 +58,19 @@ const SingUp = () => {
             </Text>
           </Center>
           <Center mb={5} position={"relative"} maxW={150} m="auto">
-            <UserPhoto
-              source={defaultImageUserPhoto}
-              size={100}
-              alt="imagem do usuário"
-            />
+            {userPhoto ? (
+              <UserPhoto
+                source={{ uri: userPhoto }}
+                size={100}
+                alt="imagem do usuário"
+              />
+            ) : (
+              <UserPhoto
+                source={defaultImageUserPhoto}
+                size={100}
+                alt="imagem do usuário"
+              />
+            )}
             <Box
               bgColor={"#647AC7"}
               rounded={"full"}
@@ -52,7 +79,7 @@ const SingUp = () => {
               right={0}
               position={"absolute"}
             >
-              <TouchableOpacity>
+              <TouchableOpacity onPress={handleUserImageSelect}>
                 <Icon as={MaterialIcons} name="edit" size={5} color={"white"} />
               </TouchableOpacity>
             </Box>

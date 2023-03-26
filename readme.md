@@ -2,6 +2,8 @@
 
 - [x] Singin
 - [x] Singup
-- [x] Public routes navigation
-  - [x] Singin + Singup
-- [ ]
+- [ ]Singin + Singup
+  - [x] Public routes navigation
+  - [ ] SingUp Image
+  - [ ] Control + types inputs - yup
+  - [ ]

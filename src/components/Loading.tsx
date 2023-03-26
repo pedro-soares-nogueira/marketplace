@@ -4,7 +4,7 @@ import React from "react"
 const Loading = () => {
   return (
     <Center flex={1}>
-      <Spinner />
+      <Spinner color={"#647AC7"} />
     </Center>
   )
 }

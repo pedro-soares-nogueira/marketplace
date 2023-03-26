@@ -15,13 +15,7 @@ const SingIn = () => {
 
   return (
     <Center>
-      <Center
-        pt={"48"}
-        pb={"32"}
-        bgColor={"gray.200"}
-        borderBottomRadius={"3xl"}
-        mb="16"
-      >
+      <Center py={"32"} bgColor={"gray.200"} borderBottomRadius={"3xl"} mb="16">
         <LogoSVG />
         <Heading fontWeight={"bold"} fontSize={"3xl"} mt="10" mb="2">
           Marketspace
@@ -41,7 +35,7 @@ const SingIn = () => {
         </Box>
       </Center>
 
-      <Box w="65%" pt={"20"}>
+      <Box w="65%" pt={"32"}>
         <Center>
           <Text fontFamily={"Poppins_500Medium"} fontSize={"lg"} mb="5">
             Ainda não tem uma conta?

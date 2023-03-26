@@ -1,9 +1,13 @@
 import { useNavigation } from "@react-navigation/native"
-import { Center, Heading, Box, Text, ScrollView } from "native-base"
+import { Center, Heading, Box, Text, ScrollView, Icon } from "native-base"
 import React from "react"
 import LogoSVG from "../assets/logo_main.svg"
 import Button from "../components/Button"
 import Input from "../components/Input"
+import UserPhoto from "../components/UserPhoto"
+import { MaterialIcons } from "@expo/vector-icons"
+import { TouchableOpacity } from "react-native"
+import defaultImageUserPhoto from "../assets/avatar.png"
 
 const SingUp = () => {
   const navigation = useNavigation()
@@ -17,7 +21,7 @@ const SingUp = () => {
       contentContainerStyle={{ flexGrow: 1 }}
       showsVerticalScrollIndicator={false}
     >
-      <Center bgColor={"gray.100"} flex={1} pb={"10"}>
+      <Center bgColor={"gray.100"} flex={1} pb={"10"} mt={"16"}>
         <LogoSVG />
         <Box mx={20}>
           <Center>
@@ -34,6 +38,26 @@ const SingUp = () => {
               seus produtos
             </Text>
           </Center>
+          <Center mb={5} position={"relative"} maxW={150} m="auto">
+            <UserPhoto
+              source={defaultImageUserPhoto}
+              size={100}
+              alt="imagem do usuário"
+            />
+            <Box
+              bgColor={"#647AC7"}
+              rounded={"full"}
+              p="2"
+              bottom={0}
+              right={0}
+              position={"absolute"}
+            >
+              <TouchableOpacity>
+                <Icon as={MaterialIcons} name="edit" size={5} color={"white"} />
+              </TouchableOpacity>
+            </Box>
+          </Center>
+
           <Input placeholder="Nome" />
           <Input
             placeholder="Email"

@@ -1,16 +1,24 @@
+import { useNavigation } from "@react-navigation/native"
 import { Box, Center, Heading, Text } from "native-base"
 import React from "react"
 import LogoSVG from "../assets/logo_main.svg"
 import Button from "../components/Button"
 import Input from "../components/Input"
+import AuthNavigatorRoutesProps from "../routes/auth.routes"
 
 const SingIn = () => {
+  const navigation = useNavigation<AuthNavigatorRoutesProps>()
+
+  function handleNewAccount() {
+    navigation.navigate("signUp")
+  }
+
   return (
     <Center>
       <Center
         pt={"48"}
         pb={"32"}
-        bgColor={"gray.100"}
+        bgColor={"gray.200"}
         borderBottomRadius={"3xl"}
         mb="16"
       >
@@ -39,7 +47,11 @@ const SingIn = () => {
             Ainda não tem uma conta?
           </Text>
         </Center>
-        <Button title="Criar conta" variant={"outline"} />
+        <Button
+          title="Criar conta"
+          variant={"outline"}
+          onPress={handleNewAccount}
+        />
       </Box>
     </Center>
   )

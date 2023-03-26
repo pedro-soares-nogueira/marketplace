@@ -1,3 +1,4 @@
+import { useNavigation } from "@react-navigation/native"
 import { Center, Heading, Box, Text, ScrollView } from "native-base"
 import React from "react"
 import LogoSVG from "../assets/logo_main.svg"
@@ -5,6 +6,12 @@ import Button from "../components/Button"
 import Input from "../components/Input"
 
 const SingUp = () => {
+  const navigation = useNavigation()
+
+  const handleGoBack = () => {
+    navigation.goBack()
+  }
+
   return (
     <ScrollView
       contentContainerStyle={{ flexGrow: 1 }}
@@ -45,7 +52,11 @@ const SingUp = () => {
               Já tem uma conta?
             </Text>
           </Center>
-          <Button title="Voltar e logar" variant={"outline"} />
+          <Button
+            title="Voltar e logar"
+            variant={"outline"}
+            onPress={handleGoBack}
+          />
         </Box>
       </Center>
     </ScrollView>

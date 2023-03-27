@@ -1,6 +1,15 @@
-import { Box, Center, Heading, HStack, Icon, Text, VStack } from "native-base"
-import React from "react"
-import { Pressable, ScrollView } from "react-native"
+import {
+  Box,
+  Modal,
+  FormControl,
+  Heading,
+  HStack,
+  Icon,
+  Text,
+  VStack,
+} from "native-base"
+import React, { useState } from "react"
+import { ScrollView } from "react-native"
 import HomeHeader from "../components/HomeHeader"
 import Input from "../components/Input"
 import OwnAdsBanner from "../components/OwnAdsBanner"
@@ -8,6 +17,7 @@ import { Ionicons } from "@expo/vector-icons"
 import Button from "../components/Button"
 import UserPhoto from "../components/UserPhoto"
 import AdsCard from "../components/AdsCard"
+import FiltesModal from "../components/FiltesModal"
 
 const Home = () => {
   return (
@@ -33,10 +43,8 @@ const Home = () => {
             />
           }
         />
-        <Button
-          title="Filtros"
-          leftIcon={<Icon as={Ionicons} name="filter" color="white" size={6} />}
-        />
+
+        <FiltesModal />
       </Box>
 
       <HStack px={6} mb={8} flexWrap={"wrap"} alignItems={"flex-start"}>

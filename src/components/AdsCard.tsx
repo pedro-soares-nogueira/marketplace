@@ -1,5 +1,5 @@
 import { Box, Center, Heading, HStack, Text } from "native-base"
-import React from "react"
+import React, { useState } from "react"
 import UserPhoto from "./UserPhoto"
 
 type AdsCardProps = {
@@ -7,8 +7,10 @@ type AdsCardProps = {
 }
 
 const AdsCard = ({ type }: AdsCardProps) => {
+  const [disabled, setDisabled] = useState(true)
+
   return (
-    <Box w={"full"} mb={8} mr={4}>
+    <Box w={"full"} mb={8} mr={4} opacity={disabled ? "50" : "1"}>
       <Box bg={"gray.300"} h={"48"} rounded={"xl"} position={"relative"}>
         <HStack justifyContent={"space-between"}>
           <UserPhoto size={8} m={2} alt={"userimage"} />
@@ -36,6 +38,11 @@ const AdsCard = ({ type }: AdsCardProps) => {
             </Center>
           )}
         </HStack>
+        {disabled && (
+          <Center mt={10}>
+            <Heading>Desativado</Heading>
+          </Center>
+        )}
       </Box>
       <Text fontSize={16} mt={2}>
         Tênis vermelho

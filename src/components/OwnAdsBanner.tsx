@@ -8,7 +8,7 @@ import { AppNavigatorRoutesProps } from "../routes/app.routes"
 const OwnAdsBanner = () => {
   const navigation = useNavigation<AppNavigatorRoutesProps>()
   const handleAdDetails = () => {
-    navigation.navigate("adDetails")
+    navigation.navigate("ownAds")
   }
   return (
     <Box px={6} my={8}>

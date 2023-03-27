@@ -54,12 +54,7 @@ const SingIn = () => {
       showsVerticalScrollIndicator={false}
     >
       <Center>
-        <Center
-          py={"32"}
-          bgColor={"gray.200"}
-          borderBottomRadius={"3xl"}
-          mb="16"
-        >
+        <Center py={"32"} borderBottomRadius={"3xl"} mb="32">
           <LogoSVG />
           <Heading fontWeight={"bold"} fontSize={"3xl"} mt="10" mb="2">
             Marketspace
@@ -114,17 +109,19 @@ const SingIn = () => {
           </Box>
         </Center>
 
-        <Box w="65%" pt={"32"} pb={10}>
-          <Center>
-            <Text fontFamily={"Poppins_500Medium"} fontSize={"lg"} mb="5">
-              Ainda não tem uma conta?
-            </Text>
-          </Center>
-          <Button
-            title="Criar conta"
-            variant={"outline"}
-            onPress={handleNewAccount}
-          />
+        <Box bg={"white"} w="full" h={"xs"}>
+          <Box pt={"32"} pb={10} mx={20}>
+            <Center>
+              <Text fontFamily={"Poppins_500Medium"} fontSize={"lg"} mb="5">
+                Ainda não tem uma conta?
+              </Text>
+            </Center>
+            <Button
+              title="Criar conta"
+              variant={"outline"}
+              onPress={handleNewAccount}
+            />
+          </Box>
         </Box>
       </Center>
     </ScrollView>

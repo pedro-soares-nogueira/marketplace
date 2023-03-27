@@ -1,11 +1,16 @@
 import { Center, Text } from "native-base"
 import React from "react"
+import { ScrollView } from "react-native"
+import HomeHeader from "../components/HomeHeader"
 
 const Home = () => {
   return (
-    <Center flex={1}>
-      <Text>Home</Text>
-    </Center>
+    <ScrollView
+      contentContainerStyle={{ flexGrow: 1 }}
+      showsVerticalScrollIndicator={false}
+    >
+      <HomeHeader />
+    </ScrollView>
   )
 }
 

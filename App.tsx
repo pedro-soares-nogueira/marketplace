@@ -5,7 +5,7 @@ import {
   Poppins_700Bold,
   Poppins_900Black,
 } from "@expo-google-fonts/poppins"
-import { NativeBaseProvider } from "native-base"
+import { Box, NativeBaseProvider } from "native-base"
 import { StatusBar } from "react-native"
 import Loading from "./src/components/Loading"
 import Routes from "./src/routes"

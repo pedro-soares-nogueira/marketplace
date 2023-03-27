@@ -9,8 +9,6 @@ import { NativeBaseProvider } from "native-base"
 import { StatusBar } from "react-native"
 import Loading from "./src/components/Loading"
 import Routes from "./src/routes"
-import SingIn from "./src/screens/SingIn"
-import SingUp from "./src/screens/SingUp"
 import { theme } from "./src/themes/theme"
 
 export default function App() {

@@ -1,22 +1,21 @@
 import {
-  BottomTabBarButtonProps,
   BottomTabNavigationProp,
   createBottomTabNavigator,
 } from "@react-navigation/bottom-tabs"
 import AdDetails from "../screens/AdDetails"
 import Home from "../screens/Home"
 import OwnAds from "../screens/OwnAds"
-import SingIn from "../screens/SingIn"
 
 import HomeSVG from "../assets/home.svg"
 import OwnadsSVG from "../assets/ownads.svg"
-import LogoutSVG from "../assets/logout.svg"
 import { useTheme } from "native-base"
 import { Platform } from "react-native"
+import NewAdform from "../screens/NewAdform"
 
 type AppRoutes = {
   home: undefined
   adDetails: undefined
+  newAdform: undefined
   ownAds: undefined
   logout: undefined
 }
@@ -76,6 +75,12 @@ const AppRoutes = () => {
       <Screen
         name="adDetails"
         component={AdDetails}
+        options={{ tabBarButton: () => null }}
+      />
+
+      <Screen
+        name="newAdform"
+        component={NewAdform}
         options={{ tabBarButton: () => null }}
       />
     </Navigator>

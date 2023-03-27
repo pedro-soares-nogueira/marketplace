@@ -18,7 +18,7 @@ const OwnAds = () => {
 
   return (
     <Box flex={1}>
-      <MainHeader />
+      <MainHeader title="Meus anúncios" />
 
       <HStack
         justifyContent={"space-between"}

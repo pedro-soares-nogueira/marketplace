@@ -4,9 +4,12 @@ import Button from "./Button"
 import UserPhoto from "./UserPhoto"
 import { MaterialIcons } from "@expo/vector-icons"
 import defaultImageUserPhoto from "../assets/avatar.png"
+import { useNavigation } from "@react-navigation/native"
+import { AppNavigatorRoutesProps } from "../routes/app.routes"
 
 const HomeHeader = () => {
   const [userPhoto, setUserPhoto] = useState("")
+  const navigation = useNavigation<AppNavigatorRoutesProps>()
 
   return (
     <Box
@@ -40,6 +43,7 @@ const HomeHeader = () => {
         </Box>
       </Box>
       <Button
+        onPress={() => navigation.navigate("newAdform")}
         title="Criar Anúncio"
         px={6}
         leftIcon={<Icon as={MaterialIcons} name="add" color="white" size={6} />}

@@ -75,13 +75,13 @@ const AppRoutes = () => {
       <Screen
         name="adDetails"
         component={AdDetails}
-        options={{ tabBarButton: () => null }}
+        options={{ tabBarButton: () => null, tabBarStyle: { display: "none" } }}
       />
 
       <Screen
         name="newAdform"
         component={NewAdform}
-        options={{ tabBarButton: () => null }}
+        options={{ tabBarButton: () => null, tabBarStyle: { display: "none" } }}
       />
     </Navigator>
   )

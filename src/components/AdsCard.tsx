@@ -1,13 +1,18 @@
-import { Box, Center, Heading, HStack, Text } from "native-base"
+import { Box, Center, Heading, HStack, Icon, Text, VStack } from "native-base"
 import React, { useState } from "react"
+import { TouchableOpacity } from "react-native"
 import UserPhoto from "./UserPhoto"
+import { Entypo, Ionicons } from "@expo/vector-icons"
+import { useNavigation } from "@react-navigation/native"
+import { AppNavigatorRoutesProps } from "../routes/app.routes"
 
 type AdsCardProps = {
   type: "used" | "new"
 }
 
 const AdsCard = ({ type }: AdsCardProps) => {
-  const [disabled, setDisabled] = useState(true)
+  const [disabled, setDisabled] = useState(false)
+  const navigation = useNavigation<AppNavigatorRoutesProps>()
 
   return (
     <Box w={"full"} mb={8} mr={4} opacity={disabled ? "50" : "1"}>
@@ -44,10 +49,24 @@ const AdsCard = ({ type }: AdsCardProps) => {
           </Center>
         )}
       </Box>
-      <Text fontSize={16} mt={2}>
-        Tênis vermelho
-      </Text>
-      <Heading fontSize={20}>R$ 56,90</Heading>
+      <HStack justifyContent={"space-between"} alignItems={"center"}>
+        <VStack>
+          <Text fontSize={16} mt={2}>
+            Tênis vermelho
+          </Text>
+          <Heading fontSize={20}>R$ 56,90</Heading>
+        </VStack>
+
+        <TouchableOpacity onPress={() => navigation.navigate("adDetails")}>
+          <Icon
+            as={Ionicons}
+            name="arrow-forward"
+            color="gray.800"
+            size={8}
+            m={4}
+          />
+        </TouchableOpacity>
+      </HStack>
     </Box>
   )
 }

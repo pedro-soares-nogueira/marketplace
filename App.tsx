@@ -4,6 +4,7 @@ import {
   Poppins_600SemiBold,
   Poppins_700Bold,
   Poppins_900Black,
+  Poppins_400Regular,
 } from "@expo-google-fonts/poppins"
 import { Box, NativeBaseProvider } from "native-base"
 import { StatusBar } from "react-native"
@@ -17,6 +18,7 @@ export default function App() {
     Poppins_600SemiBold,
     Poppins_700Bold,
     Poppins_900Black,
+    Poppins_400Regular,
   })
   return (
     <NativeBaseProvider theme={theme}>

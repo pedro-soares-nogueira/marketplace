@@ -3,6 +3,9 @@ import { extendTheme } from "native-base"
 export const theme = extendTheme({
   fontConfig: {
     Poppins: {
+      400: {
+        normal: "Poppins_400Regular",
+      },
       500: {
         normal: "Poppins_500Medium",
       },

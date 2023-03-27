@@ -5,7 +5,7 @@ import AuthRoutes from "./auth.routes"
 const Routes = () => {
   return (
     <NavigationContainer>
-      <AuthRoutes />
+      <AppRoutes />
     </NavigationContainer>
   )
 }

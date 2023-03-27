@@ -39,12 +39,12 @@ const Home = () => {
         />
       </Box>
 
-      <HStack px={6} mb={8} flexWrap={"wrap"}>
-        <AdsCard />
-        <AdsCard />
-        <AdsCard />
-        <AdsCard />
-        <AdsCard />
+      <HStack px={6} mb={8} flexWrap={"wrap"} alignItems={"flex-start"}>
+        <AdsCard type="new" />
+        <AdsCard type="used" />
+        <AdsCard type="used" />
+        <AdsCard type="new" />
+        <AdsCard type="new" />
       </HStack>
     </ScrollView>
   )

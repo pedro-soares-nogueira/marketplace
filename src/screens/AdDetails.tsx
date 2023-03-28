@@ -7,7 +7,7 @@ import Button from "../components/Button"
 import { AntDesign, FontAwesome5, FontAwesome } from "@expo/vector-icons"
 
 type AdDetailsProps = {
-  type: "used" | "new"
+  type?: "used" | "new"
 }
 
 const AdDetails = ({ type = "used" }: AdDetailsProps) => {

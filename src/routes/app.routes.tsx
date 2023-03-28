@@ -8,9 +8,13 @@ import OwnAds from "../screens/OwnAds"
 
 import HomeSVG from "../assets/home.svg"
 import OwnadsSVG from "../assets/ownads.svg"
-import { useTheme } from "native-base"
+import { Icon, useTheme } from "native-base"
 import { Platform } from "react-native"
 import NewAdform from "../screens/NewAdform"
+import { useAuth } from "../contexts/AuthContext"
+import { useEffect } from "react"
+import Loading from "../components/Loading"
+import { MaterialIcons } from "@expo/vector-icons"
 
 type AppRoutes = {
   home: undefined
@@ -62,16 +66,6 @@ const AppRoutes = () => {
           ),
         }}
       />
-      {/* 
-      <Screen
-        name="logout"
-        component={SingIn}
-        options={{
-          tabBarIcon: ({ color }) => (
-            <LogoutSVG fill={color} width={iconSize} height={iconSize} />
-          ),
-        }}
-      /> */}
       <Screen
         name="adDetails"
         component={AdDetails}
@@ -82,6 +76,27 @@ const AppRoutes = () => {
         name="newAdform"
         component={NewAdform}
         options={{ tabBarButton: () => null, tabBarStyle: { display: "none" } }}
+      />
+
+      <Screen
+        name="logout"
+        component={() => {
+          const { signOut } = useAuth()
+
+          async function handleSignOut() {
+            await signOut()
+          }
+
+          useEffect(() => {
+            handleSignOut()
+          }, [])
+          return <Loading />
+        }}
+        options={{
+          tabBarIcon: () => (
+            <Icon as={MaterialIcons} name="logout" color="red.600" size={7} />
+          ),
+        }}
       />
     </Navigator>
   )

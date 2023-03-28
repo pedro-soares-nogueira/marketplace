@@ -7,6 +7,7 @@ import {
   ScrollView,
   Icon,
   Pressable,
+  useToast,
 } from "native-base"
 import React, { useState } from "react"
 import { Controller, useForm } from "react-hook-form"
@@ -17,6 +18,8 @@ import AuthNavigatorRoutesProps from "../routes/auth.routes"
 import * as yup from "yup"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { MaterialIcons } from "@expo/vector-icons"
+import { useAuth } from "../contexts/AuthContext"
+import { AppError } from "../utils/AppError"
 
 type FormSingInProps = {
   email: string
@@ -25,10 +28,14 @@ type FormSingInProps = {
 
 const singInSchema = yup.object({
   email: yup.string().email("Email obrigatório"),
-  password: yup.string().min(6, "Min de 3 caracteres"),
+  password: yup.string().min(6, "Min de 6 caracteres"),
 })
 
 const SingIn = () => {
+  const { signIn } = useAuth()
+  const [isLoading, setIsLoading] = useState(false)
+  const toast = useToast()
+
   const [show, setShow] = useState(false)
   const navigation = useNavigation<AuthNavigatorRoutesProps>()
 
@@ -44,8 +51,24 @@ const SingIn = () => {
     navigation.navigate("signUp")
   }
 
-  const handleSingIn = ({ email, password }: FormSingInProps) => {
-    console.log(email, password)
+  const handleSingIn = async ({ email, password }: FormSingInProps) => {
+    try {
+      setIsLoading(true)
+      await signIn(email, password)
+    } catch (error) {
+      const isAppError = error instanceof AppError
+      const title = isAppError ? error.message : "Não foi possível logar."
+
+      setIsLoading(false)
+
+      toast.show({
+        title,
+        placement: "top",
+        bgColor: "red.500",
+      })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (

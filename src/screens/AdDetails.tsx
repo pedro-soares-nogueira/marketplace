@@ -5,13 +5,24 @@ import MainHeader from "../components/MainHeader"
 import UserPhoto from "../components/UserPhoto"
 import Button from "../components/Button"
 import { AntDesign, FontAwesome5, FontAwesome } from "@expo/vector-icons"
+import { AdDetailsDTO } from "../models/AdDetailsDTO"
+import { useRoute } from "@react-navigation/native"
 
 type AdDetailsProps = {
   type?: "used" | "new"
 }
 
+type RouteParams = {
+  adDetails: AdDetailsDTO
+}
+
 const AdDetails = ({ type = "used" }: AdDetailsProps) => {
   const [data, setData] = useState(["#ff6633", "#ffb399", "#3366e6", "#b34d4d"])
+  const route = useRoute()
+
+  const { adDetails } = route.params as RouteParams
+  console.log(adDetails)
+
   const { width } = Dimensions.get("window")
   return (
     <ScrollView
@@ -72,7 +83,7 @@ const AdDetails = ({ type = "used" }: AdDetailsProps) => {
           </HStack>
 
           <HStack w="full" mt="8" justifyContent={"space-between"}>
-            <Heading>Biclicleta</Heading>
+            <Heading>{adDetails.name}</Heading>
             <Heading color={"#647AC7"}>R$ 120,00</Heading>
           </HStack>
 

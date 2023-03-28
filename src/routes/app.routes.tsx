@@ -15,10 +15,11 @@ import { useAuth } from "../contexts/AuthContext"
 import { useEffect } from "react"
 import Loading from "../components/Loading"
 import { MaterialIcons } from "@expo/vector-icons"
+import { AdDetailsDTO } from "../models/AdDetailsDTO"
 
 type AppRoutes = {
   home: undefined
-  adDetails: undefined
+  adDetails: { adDetails: AdDetailsDTO } | undefined
   newAdform: undefined
   ownAds: undefined
   logout: undefined

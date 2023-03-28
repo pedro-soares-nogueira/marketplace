@@ -38,8 +38,6 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
   const [isLoadingUserStorageData, setIsLoadingUserStorageData] =
     useState(false)
 
-  console.log(user)
-
   const saveUserAndTokenInStorage = async (
     user: UserDTO,
     token: string,

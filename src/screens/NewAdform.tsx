@@ -2,6 +2,7 @@ import {
   Box,
   Center,
   Checkbox,
+  FormControl,
   Heading,
   HStack,
   Icon,
@@ -9,6 +10,7 @@ import {
   Switch,
   Text,
   TextArea,
+  useToast,
   VStack,
 } from "native-base"
 import React, { useState } from "react"
@@ -27,23 +29,29 @@ import { MaterialIcons } from "@expo/vector-icons"
 import { ImagePreview } from "../components/ImagePreview"
 import * as ImagePicker from "expo-image-picker"
 import { ImageHandler } from "../components/ImageHandler"
+import { AdDetailsDTO } from "../models/AdDetailsDTO"
 
 type FormAdProps = {
   title: string
   price: number
   description: string
+  isNew: false
+  exchange: false
+  payMethods: string[]
 }
 
 const FormAdSchema = yup.object({
   title: yup.string().min(4, "Nome é obrigatório"),
   price: yup.number().min(4, "Valor é  obrigatório"),
   description: yup.string().min(2, "Descreva algo sobre o produto"),
+  isNew: yup.boolean(),
+  exchange: yup.boolean(),
 })
 
 const NewAdform = () => {
   const navigation = useNavigation<AppNavigatorRoutesProps>()
-  const [groupValues, setGroupValues] = useState([])
   const [imagesUri, setImagesUri] = useState<string[]>([])
+  const toast = useToast()
 
   const {
     control,
@@ -73,6 +81,36 @@ const NewAdform = () => {
   const removeImage = (uri: string) => {
     const imagesFiltered = imagesUri.filter((imageUri) => imageUri !== uri)
     setImagesUri(imagesFiltered)
+  }
+
+  const handlePreview = (data: FormAdProps) => {
+    const { title, description, payMethods, price, exchange, isNew } = data
+
+    const adDetails: AdDetailsDTO = {
+      name: title,
+      description,
+      price: price,
+      imagesUri,
+      is_new: isNew,
+      accept_trade: exchange,
+      payment_methods: payMethods,
+    }
+
+    if (
+      title.length === 0 ||
+      description.length === 0 ||
+      price === 0 ||
+      imagesUri.length === 0 ||
+      payMethods.length === 0
+    ) {
+      return toast.show({
+        title:
+          "Você esqueceu de preencher algum campo ou de escolher uma imagem.",
+        placement: "top",
+        bgColor: "red.500",
+      })
+    }
+    navigation.navigate("adDetails", { adDetails })
   }
 
   return (
@@ -178,41 +216,64 @@ const NewAdform = () => {
               <HStack alignItems="baseline">
                 <Heading fontSize="lg">Produto novo?</Heading>
               </HStack>
-              <Switch size="md" />
+              <Controller
+                control={control}
+                name="isNew"
+                render={({ field: { onChange, value } }) => (
+                  <Switch
+                    onToggle={(val: boolean) => onChange(val)}
+                    isChecked={value}
+                  />
+                )}
+              />
             </HStack>
 
             <HStack alignItems="flex-start" flexDirection={"column"} space={4}>
               <HStack alignItems="baseline">
                 <Heading fontSize="lg">Aceita troca?</Heading>
               </HStack>
-              <Switch size="md" />
+              <Controller
+                control={control}
+                name="exchange"
+                render={({ field: { onChange, value } }) => (
+                  <Switch
+                    onToggle={(val: boolean) => onChange(val)}
+                    isChecked={value}
+                  />
+                )}
+              />
             </HStack>
 
-            <Checkbox.Group
-              mt={8}
-              onChange={setGroupValues}
-              value={groupValues}
-              accessibilityLabel="formas de pagamento"
-            >
-              <HStack alignItems="baseline">
-                <Heading fontSize="lg">Formas de pagamento</Heading>
-              </HStack>
-              <Checkbox value="pix" my={2}>
-                PIX
-              </Checkbox>
-              <Checkbox my={2} value="boleto">
-                Boleto
-              </Checkbox>
-              <Checkbox my={2} value="dinheiro">
-                Dinheiro
-              </Checkbox>
-              <Checkbox my={2} value="cartaoCredito">
-                Crédito
-              </Checkbox>
-              <Checkbox my={2} value="cartaoDebito">
-                Débito
-              </Checkbox>
-            </Checkbox.Group>
+            <Controller
+              control={control}
+              name="payMethods"
+              render={({ field: { onChange } }) => (
+                <Checkbox.Group
+                  mt={8}
+                  onChange={(values) => onChange(values)}
+                  accessibilityLabel="formas de pagamento"
+                >
+                  <HStack alignItems="baseline">
+                    <Heading fontSize="lg">Formas de pagamento</Heading>
+                  </HStack>
+                  <Checkbox my={2} value="card">
+                    Cartão de Crédito
+                  </Checkbox>
+                  <Checkbox my={2} value="cash">
+                    Boleto
+                  </Checkbox>
+                  <Checkbox my={2} value="dinheiro">
+                    Dinheiro
+                  </Checkbox>
+                  <Checkbox my={2} value="boleto">
+                    Boleto
+                  </Checkbox>
+                  <Checkbox my={2} value="pix">
+                    Pix
+                  </Checkbox>
+                </Checkbox.Group>
+              )}
+            />
           </VStack>
 
           <HStack mt="10" w="full" justifyContent={"space-between"}>
@@ -222,7 +283,11 @@ const NewAdform = () => {
               variant={"outline"}
               onPress={() => navigation.goBack()}
             />
-            <Button px={16} title="Avançar" />
+            <Button
+              px={16}
+              title="Avançar"
+              onPress={handleSubmit(handlePreview)}
+            />
           </HStack>
         </VStack>
       </Box>

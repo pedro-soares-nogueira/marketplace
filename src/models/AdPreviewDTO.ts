@@ -1,4 +1,4 @@
-export type AdDetailsDTO = {
+export type AdPreviewDTO = {
   name: string
   description: string
   price: number

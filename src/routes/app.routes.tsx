@@ -15,11 +15,13 @@ import { useAuth } from "../contexts/AuthContext"
 import { useEffect } from "react"
 import Loading from "../components/Loading"
 import { MaterialIcons } from "@expo/vector-icons"
-import { AdDetailsDTO } from "../models/AdDetailsDTO"
+import { AdPreviewDTO } from "../models/AdPreviewDTO"
+import AdPreview from "../screens/AdPreview"
 
 type AppRoutes = {
   home: undefined
-  adDetails: { adDetails: AdDetailsDTO } | undefined
+  adPreview: { adPreview: AdPreviewDTO } | undefined
+  adDetails: undefined
   newAdform: undefined
   ownAds: undefined
   logout: undefined
@@ -76,6 +78,12 @@ const AppRoutes = () => {
       <Screen
         name="newAdform"
         component={NewAdform}
+        options={{ tabBarButton: () => null, tabBarStyle: { display: "none" } }}
+      />
+
+      <Screen
+        name="adPreview"
+        component={AdPreview}
         options={{ tabBarButton: () => null, tabBarStyle: { display: "none" } }}
       />
 

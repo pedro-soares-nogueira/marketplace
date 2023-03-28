@@ -29,7 +29,7 @@ import { MaterialIcons } from "@expo/vector-icons"
 import { ImagePreview } from "../components/ImagePreview"
 import * as ImagePicker from "expo-image-picker"
 import { ImageHandler } from "../components/ImageHandler"
-import { AdDetailsDTO } from "../models/AdDetailsDTO"
+import { AdPreviewDTO } from "../models/AdPreviewDTO"
 
 type FormAdProps = {
   title: string
@@ -86,7 +86,7 @@ const NewAdform = () => {
   const handlePreview = (data: FormAdProps) => {
     const { title, description, payMethods, price, exchange, isNew } = data
 
-    const adDetails: AdDetailsDTO = {
+    const adPreview: AdPreviewDTO = {
       name: title,
       description,
       price: price,
@@ -110,7 +110,7 @@ const NewAdform = () => {
         bgColor: "red.500",
       })
     }
-    navigation.navigate("adDetails", { adDetails })
+    navigation.navigate("adPreview", { adPreview })
   }
 
   return (
@@ -260,13 +260,13 @@ const NewAdform = () => {
                     Cartão de Crédito
                   </Checkbox>
                   <Checkbox my={2} value="cash">
-                    Boleto
-                  </Checkbox>
-                  <Checkbox my={2} value="dinheiro">
                     Dinheiro
                   </Checkbox>
                   <Checkbox my={2} value="boleto">
                     Boleto
+                  </Checkbox>
+                  <Checkbox my={2} value="deposit">
+                    Depósito bancário
                   </Checkbox>
                   <Checkbox my={2} value="pix">
                     Pix

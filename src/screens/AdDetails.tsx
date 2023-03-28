@@ -1,6 +1,6 @@
 import { Box, Center, Heading, HStack, Icon, Text, VStack } from "native-base"
-import React from "react"
-import { ScrollView } from "react-native"
+import React, { useState } from "react"
+import { Dimensions, FlatList, ScrollView, View } from "react-native"
 import MainHeader from "../components/MainHeader"
 import UserPhoto from "../components/UserPhoto"
 import Button from "../components/Button"
@@ -11,6 +11,8 @@ type AdDetailsProps = {
 }
 
 const AdDetails = ({ type = "used" }: AdDetailsProps) => {
+  const [data, setData] = useState(["#ff6633", "#ffb399", "#3366e6", "#b34d4d"])
+  const { width } = Dimensions.get("window")
   return (
     <ScrollView
       contentContainerStyle={{ flexGrow: 1 }}
@@ -19,7 +21,23 @@ const AdDetails = ({ type = "used" }: AdDetailsProps) => {
       <Box flex={1}>
         <MainHeader title="Anúncio" />
 
-        <Box w="full" h="400" bg={"gray.400"}></Box>
+        <Box>
+          <FlatList
+            data={data}
+            keyExtractor={(item) => item}
+            horizontal
+            pagingEnabled
+            renderItem={({ item }) => (
+              <View
+                style={{
+                  backgroundColor: item,
+                  height: width / 1.5,
+                  width: width,
+                }}
+              />
+            )}
+          />
+        </Box>
 
         <VStack py="6" px={6}>
           <HStack alignItems={"center"}>

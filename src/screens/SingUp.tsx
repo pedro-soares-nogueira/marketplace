@@ -7,6 +7,7 @@ import {
   ScrollView,
   Icon,
   Pressable,
+  useToast,
 } from "native-base"
 import React, { useState } from "react"
 import LogoSVG from "../assets/logo_main.svg"
@@ -21,8 +22,16 @@ import { Controller, useForm } from "react-hook-form"
 import * as yup from "yup"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { api } from "../services/api"
-import { ImagePickerAsset } from "expo-image-picker"
-import axios from "axios"
+import * as FileSystem from "expo-file-system"
+import { AppError } from "../utils/AppError"
+
+type UserPhotoProps = {
+  photo: {
+    uri: string
+    name: string
+    type: string
+  }
+}
 
 type FormSingUpProps = {
   name: string
@@ -51,9 +60,10 @@ const singUpSchema = yup.object({
 
 const SingUp = () => {
   const [show, setShow] = useState(false)
-  const [userPhoto, setUserPhoto] = useState("")
-  const [userPhotoSelected, setUserPhotoSelected] = useState<ImagePickerAsset>()
+  const [isLoading, setIsLoading] = useState(false)
+  const [userPhoto, setUserPhoto] = useState({} as UserPhotoProps)
   const navigation = useNavigation()
+  const toast = useToast()
 
   const {
     control,
@@ -66,43 +76,48 @@ const SingUp = () => {
 
   const handleSingUp = async (data: FormSingUpProps) => {
     const { name, email, phone, password } = data
-
-    let photoFile
-
-    const avatar = new FormData()
-
-    if (userPhotoSelected) {
-      const fileExtension = userPhotoSelected.uri.split(".").pop()
-
-      photoFile = {
-        name: `${getValues("name")}.${fileExtension}`.toLowerCase(),
-        uri: userPhotoSelected.uri,
-        type: `${userPhotoSelected.type}/${fileExtension}`,
-      } as any
-
-      avatar.append("avatar", photoFile)
-    }
-
-    const newUser = {
-      name,
-      email,
-      tel: phone,
-      password,
-      avatar,
-    }
-    console.log(newUser)
-
     try {
-      const response = await api.post("/users/", newUser, {
+      setIsLoading(true)
+      const userForm = new FormData()
+
+      const userAvatar: any = {
+        ...userPhoto.photo,
+        name: `${name}.${userPhoto.photo.name}`.toLowerCase(),
+      }
+
+      userForm.append("avatar", userAvatar)
+      userForm.append("name", name)
+      userForm.append("email", email)
+      userForm.append("tel", phone.toString())
+      userForm.append("password", password)
+
+      await api.post("/users", userForm, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       })
-      console.log(response.data)
+
+      toast.show({
+        title: "Usuário cadastrado com sucesso!",
+        placement: "top",
+        top: "4",
+        bgColor: "green.500",
+      })
+      setIsLoading(false)
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.log(error.response?.data)
-      }
+      setIsLoading(false)
+      const isAppError = error instanceof AppError
+
+      const title = isAppError
+        ? error.message
+        : "Não foi possível criar a conta."
+
+      toast.show({
+        title,
+        placement: "top",
+        top: "4",
+        bgColor: "red.500",
+      })
     }
   }
 
@@ -111,6 +126,8 @@ const SingUp = () => {
   }
 
   const handleUserImageSelect = async () => {
+    setIsLoading(true)
+
     const photoSelected = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 1,
@@ -122,9 +139,31 @@ const SingUp = () => {
       return
     }
 
-    if (photoSelected.assets) {
-      setUserPhotoSelected(photoSelected.assets[0])
-      setUserPhoto(photoSelected.assets[0].uri)
+    if (photoSelected.assets[0].uri) {
+      const photoInfo = await FileSystem.getInfoAsync(
+        photoSelected.assets[0].uri
+      )
+
+      const fileExtension = photoSelected.assets[0].uri.split(".").pop()
+
+      const photoFile = {
+        name: `${fileExtension}`.toLowerCase(),
+        uri: photoSelected.assets[0].uri,
+        type: `${photoSelected.assets[0].type}/${fileExtension}`,
+      } as any
+
+      setUserPhoto({
+        photo: { ...photoFile },
+      })
+
+      toast.show({
+        title: "Foto selecionada!",
+        placement: "top",
+        top: "4",
+        bgColor: "green.600",
+      })
+
+      setIsLoading(false)
     }
   }
 
@@ -151,9 +190,9 @@ const SingUp = () => {
             </Text>
           </Center>
           <Center mb={5} position={"relative"} maxW={150} m="auto">
-            {userPhoto ? (
+            {userPhoto.photo ? (
               <UserPhoto
-                source={{ uri: userPhoto }}
+                source={{ uri: userPhoto.photo?.uri }}
                 size={100}
                 alt="imagem do usuário"
               />
@@ -270,7 +309,11 @@ const SingUp = () => {
               />
             )}
           />
-          <Button title="Entrar" onPress={handleSubmit(handleSingUp)} />
+          <Button
+            title="Entrar"
+            onPress={handleSubmit(handleSingUp)}
+            isLoading={isLoading}
+          />
         </Box>
 
         <Box w="65%" pt={"20"}>

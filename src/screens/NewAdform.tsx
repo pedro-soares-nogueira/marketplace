@@ -5,13 +5,14 @@ import {
   Heading,
   HStack,
   Icon,
+  Pressable,
   Switch,
   Text,
   TextArea,
   VStack,
 } from "native-base"
 import React, { useState } from "react"
-import { Entypo } from "@expo/vector-icons"
+import { AntDesign } from "@expo/vector-icons"
 import MainHeader from "../components/MainHeader"
 import * as yup from "yup"
 import { yupResolver } from "@hookform/resolvers/yup"
@@ -23,6 +24,9 @@ import Button from "../components/Button"
 import { useNavigation } from "@react-navigation/native"
 import { AppNavigatorRoutesProps } from "../routes/app.routes"
 import { MaterialIcons } from "@expo/vector-icons"
+import { ImagePreview } from "../components/ImagePreview"
+import * as ImagePicker from "expo-image-picker"
+import { ImageHandler } from "../components/ImageHandler"
 
 type FormAdProps = {
   title: string
@@ -31,14 +35,15 @@ type FormAdProps = {
 }
 
 const FormAdSchema = yup.object({
-  title: yup.string().min(4, "Nome obrigatório"),
-  price: yup.number().min(4, "Nome obrigatório"),
+  title: yup.string().min(4, "Nome é obrigatório"),
+  price: yup.number().min(4, "Valor é  obrigatório"),
   description: yup.string().min(2, "Descreva algo sobre o produto"),
 })
 
 const NewAdform = () => {
   const navigation = useNavigation<AppNavigatorRoutesProps>()
   const [groupValues, setGroupValues] = useState([])
+  const [imagesUri, setImagesUri] = useState<string[]>([])
 
   const {
     control,
@@ -47,6 +52,29 @@ const NewAdform = () => {
   } = useForm<FormAdProps>({
     resolver: yupResolver(FormAdSchema),
   })
+
+  const handleSelectImage = async () => {
+    const imageSelected = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1,
+      aspect: [4, 4],
+      allowsEditing: true,
+    })
+
+    if (imageSelected.canceled) {
+      return
+    }
+
+    if (imageSelected.assets[0].uri) {
+      setImagesUri([...imagesUri, imageSelected.assets[0].uri])
+    }
+  }
+
+  const removeImage = (uri: string) => {
+    const imagesFiltered = imagesUri.filter((imageUri) => imageUri !== uri)
+    setImagesUri(imagesFiltered)
+  }
+
   return (
     <ScrollView
       contentContainerStyle={{ flexGrow: 1 }}
@@ -63,30 +91,37 @@ const NewAdform = () => {
           </Text>
 
           <Box mt={8} flexDirection={"row"}>
-            <Center w={"1/4"} mr={2} h={100} bg={"gray.300"} rounded="md">
-              <Icon
-                as={<Entypo name={"plus"} />}
-                size={8}
-                mr="2"
-                color="gray.400"
-              />
-            </Center>
-            <Center w={"1/4"} mr={2} h={100} bg={"gray.300"} rounded="md">
-              <Icon
-                as={<Entypo name={"plus"} />}
-                size={8}
-                mr="2"
-                color="gray.400"
-              />
-            </Center>
-            <Center w={"1/4"} mr={2} h={100} bg={"gray.300"} rounded="md">
-              <Icon
-                as={<Entypo name={"plus"} />}
-                size={8}
-                mr="2"
-                color="gray.400"
-              />
-            </Center>
+            <HStack>
+              {imagesUri.length > 0 &&
+                imagesUri.map((imageUri) => (
+                  <Box key={imageUri}>
+                    <ImagePreview uri={imageUri} />
+
+                    <Pressable
+                      onPress={() => removeImage(imageUri)}
+                      position="absolute"
+                      mt={5}
+                      ml={1}
+                      w={5}
+                      h={5}
+                      rounded="full"
+                      bgColor="gray.400"
+                      alignItems="center"
+                      justifyContent="center"
+                    >
+                      <Icon
+                        as={AntDesign}
+                        name="close"
+                        color="gray.800"
+                        size={3}
+                      />
+                    </Pressable>
+                  </Box>
+                ))}
+              {imagesUri.length < 3 && (
+                <ImageHandler onPress={handleSelectImage} />
+              )}
+            </HStack>
           </Box>
 
           <VStack mt={10}>

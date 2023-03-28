@@ -1,4 +1,13 @@
-import { Box, Center, Heading, HStack, Icon, Text, VStack } from "native-base"
+import {
+  Box,
+  Center,
+  Heading,
+  HStack,
+  Icon,
+  Image,
+  Text,
+  VStack,
+} from "native-base"
 import React, { useState } from "react"
 import { Dimensions, FlatList, ScrollView, View } from "react-native"
 import MainHeader from "../components/MainHeader"
@@ -27,10 +36,10 @@ const AdPreview = () => {
   const route = useRoute()
   const navigation = useNavigation<AppNavigatorRoutesProps>()
 
-  const { adPreview } = route.params as RouteParams
-  console.log(adPreview)
-
   const { width } = Dimensions.get("window")
+
+  const { adPreview } = route.params as RouteParams
+  console.log(adPreview.imagesUri)
   return (
     <ScrollView
       contentContainerStyle={{ flexGrow: 1 }}
@@ -51,18 +60,23 @@ const AdPreview = () => {
 
         <Box>
           <FlatList
-            data={data}
+            data={adPreview.imagesUri}
             keyExtractor={(item) => item}
             horizontal
             pagingEnabled
             renderItem={({ item }) => (
-              <View
-                style={{
-                  backgroundColor: item,
-                  height: width / 1.5,
-                  width: width,
-                }}
-              />
+              <Box bgColor={"gray.700"} w={width} h="400px">
+                <Image
+                  w={width}
+                  h="400px"
+                  mb={8}
+                  source={{
+                    uri: item,
+                  }}
+                  alt="Imagem do produto"
+                  resizeMode="cover"
+                />
+              </Box>
             )}
           />
         </Box>

@@ -52,6 +52,7 @@ const NewAdform = () => {
   const navigation = useNavigation<AppNavigatorRoutesProps>()
   const [imagesUri, setImagesUri] = useState<string[]>([])
   const toast = useToast()
+  console.log(imagesUri)
 
   const {
     control,

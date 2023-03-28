@@ -25,7 +25,7 @@ type FormSingInProps = {
 
 const singInSchema = yup.object({
   email: yup.string().email("Email obrigatório"),
-  password: yup.string().min(3, "Min de 3 caracteres"),
+  password: yup.string().min(6, "Min de 3 caracteres"),
 })
 
 const SingIn = () => {

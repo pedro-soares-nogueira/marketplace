@@ -20,6 +20,9 @@ import * as ImagePicker from "expo-image-picker"
 import { Controller, useForm } from "react-hook-form"
 import * as yup from "yup"
 import { yupResolver } from "@hookform/resolvers/yup"
+import { api } from "../services/api"
+import { ImagePickerAsset } from "expo-image-picker"
+import axios from "axios"
 
 type FormSingUpProps = {
   name: string
@@ -49,18 +52,58 @@ const singUpSchema = yup.object({
 const SingUp = () => {
   const [show, setShow] = useState(false)
   const [userPhoto, setUserPhoto] = useState("")
+  const [userPhotoSelected, setUserPhotoSelected] = useState<ImagePickerAsset>()
   const navigation = useNavigation()
 
   const {
     control,
     handleSubmit,
     formState: { errors },
+    getValues,
   } = useForm<FormSingUpProps>({
     resolver: yupResolver(singUpSchema),
   })
 
-  const handleSingUp = (data: FormSingUpProps) => {
-    console.log(data, userPhoto)
+  const handleSingUp = async (data: FormSingUpProps) => {
+    const { name, email, phone, password } = data
+
+    let photoFile
+
+    const avatar = new FormData()
+
+    if (userPhotoSelected) {
+      const fileExtension = userPhotoSelected.uri.split(".").pop()
+
+      photoFile = {
+        name: `${getValues("name")}.${fileExtension}`.toLowerCase(),
+        uri: userPhotoSelected.uri,
+        type: `${userPhotoSelected.type}/${fileExtension}`,
+      } as any
+
+      avatar.append("avatar", photoFile)
+    }
+
+    const newUser = {
+      name,
+      email,
+      tel: phone,
+      password,
+      avatar,
+    }
+    console.log(newUser)
+
+    try {
+      const response = await api.post("/users/", newUser, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      console.log(response.data)
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.log(error.response?.data)
+      }
+    }
   }
 
   const handleGoBack = () => {
@@ -80,6 +123,7 @@ const SingUp = () => {
     }
 
     if (photoSelected.assets) {
+      setUserPhotoSelected(photoSelected.assets[0])
       setUserPhoto(photoSelected.assets[0].uri)
     }
   }
@@ -165,6 +209,7 @@ const SingUp = () => {
             render={({ field: { onChange } }) => (
               <Input
                 placeholder="Telefone"
+                keyboardType="phone-pad"
                 autoCapitalize="none"
                 onChangeText={onChange}
                 errorMessage={errors.phone?.message}

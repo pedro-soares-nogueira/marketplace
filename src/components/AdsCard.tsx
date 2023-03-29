@@ -26,8 +26,6 @@ type AdsCardProps = {
 const AdsCard = ({ owner, adDetails }: AdsCardProps) => {
   const [disabled, setDisabled] = useState(!adDetails?.is_active)
   const navigation = useNavigation<AppNavigatorRoutesProps>()
-  console.log(adDetails)
-
   return (
     <Box w={"full"} mb={8} mr={4} opacity={disabled ? "50" : "1"}>
       <Box rounded={"xl"} position={"relative"}>

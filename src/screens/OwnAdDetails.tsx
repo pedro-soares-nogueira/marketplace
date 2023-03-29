@@ -6,6 +6,7 @@ import {
   Icon,
   Image,
   Text,
+  Pressable,
   useTheme,
   useToast,
   VStack,
@@ -45,8 +46,6 @@ const OwnAdDetails = () => {
   const { user } = useAuth()
   const { colors } = useTheme()
   const toast = useToast()
-
-  console.log(ad.payment_methods)
 
   const route = useRoute()
   const { adId } = route.params as RouteParams
@@ -156,6 +155,23 @@ const OwnAdDetails = () => {
     >
       <Box flex={1}>
         <MainHeader title="Anúncio" />
+
+        <Pressable
+          onPress={() => navigation.navigate("newAdform", { adDetails: ad })}
+          flexDirection="row"
+          justifyContent={"center"}
+          alignItems="center"
+          my="4"
+        >
+          <Text mr="3">Editar</Text>
+          <Icon
+            as={FontAwesome5}
+            name="edit"
+            color="gray.700"
+            size={4}
+            mr={2}
+          />
+        </Pressable>
 
         <Box>
           <FlatList

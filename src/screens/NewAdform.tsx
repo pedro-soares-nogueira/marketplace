@@ -13,7 +13,7 @@ import {
   useToast,
   VStack,
 } from "native-base"
-import React, { useState } from "react"
+import React, { useCallback, useState } from "react"
 import { AntDesign } from "@expo/vector-icons"
 import MainHeader from "../components/MainHeader"
 import * as yup from "yup"
@@ -23,21 +23,32 @@ import Input from "../components/Input"
 import TextAreaInput from "../components/TextAreaInput"
 import { ScrollView } from "react-native"
 import Button from "../components/Button"
-import { useNavigation } from "@react-navigation/native"
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native"
 import { AppNavigatorRoutesProps } from "../routes/app.routes"
 import { MaterialIcons } from "@expo/vector-icons"
 import { ImagePreview } from "../components/ImagePreview"
 import * as ImagePicker from "expo-image-picker"
 import { ImageHandler } from "../components/ImageHandler"
 import { AdPreviewDTO } from "../models/AdPreviewDTO"
+import { AppError } from "../utils/AppError"
+import { api } from "../services/api"
+import { AdDTO } from "../models/AdDTO"
 
 type FormAdProps = {
   title: string
   price: number
   description: string
-  isNew: false
-  exchange: false
+  isNew: boolean
+  exchange: boolean
   payMethods: string[]
+}
+
+type RouteParams = {
+  adDetails?: AdDTO
 }
 
 const FormAdSchema = yup.object({
@@ -54,12 +65,27 @@ const NewAdform = () => {
   const [imagesUri, setImagesUri] = useState<string[]>([])
   const toast = useToast()
 
+  const route = useRoute()
+  const { adDetails } = route.params as RouteParams
+
+  console.log(adDetails)
+
+  const payMethodsKey = adDetails?.payment_methods.map(({ key }) => key)
+  const [payMethods, setPayMethods] = useState(payMethodsKey)
+
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm<FormAdProps>({
     resolver: yupResolver(FormAdSchema),
+    defaultValues: {
+      title: adDetails?.name,
+      description: adDetails?.description,
+      isNew: adDetails?.is_new,
+      exchange: adDetails?.accept_trade,
+      price: adDetails?.price,
+    },
   })
 
   const handleSelectImage = async () => {
@@ -121,8 +147,11 @@ const NewAdform = () => {
       showsVerticalScrollIndicator={false}
     >
       <Box flex={1} mb="10">
-        <MainHeader title="Criar anúncio" isNewAdForm />
-
+        {adDetails ? (
+          <MainHeader title="Edite o anúncio" isNewAdForm />
+        ) : (
+          <MainHeader title="Criar anúncio" isNewAdForm />
+        )}
         <VStack px={6}>
           <Heading mb={2}>Imagens</Heading>
           <Text maxW={370}>
@@ -170,8 +199,9 @@ const NewAdform = () => {
             <Controller
               control={control}
               name="title"
-              render={({ field: { onChange } }) => (
+              render={({ field: { onChange, value } }) => (
                 <Input
+                  value={value}
                   placeholder="Nome do produto"
                   onChangeText={onChange}
                   errorMessage={errors.title?.message}
@@ -181,8 +211,9 @@ const NewAdform = () => {
             <Controller
               control={control}
               name="description"
-              render={({ field: { onChange } }) => (
+              render={({ field: { onChange, value } }) => (
                 <TextAreaInput
+                  value={value}
                   placeholder="Dê uma descrição ao produto"
                   onChangeText={onChange}
                   errorMessage={errors.description?.message}
@@ -196,7 +227,7 @@ const NewAdform = () => {
             <Controller
               control={control}
               name="price"
-              render={({ field: { onChange } }) => (
+              render={({ field: { onChange, value } }) => (
                 <Input
                   placeholder="Preco do produto"
                   onChangeText={onChange}
@@ -246,36 +277,30 @@ const NewAdform = () => {
               />
             </HStack>
 
-            <Controller
-              control={control}
-              name="payMethods"
-              render={({ field: { onChange } }) => (
-                <Checkbox.Group
-                  mt={8}
-                  onChange={(values) => onChange(values)}
-                  accessibilityLabel="formas de pagamento"
-                >
-                  <HStack alignItems="baseline">
-                    <Heading fontSize="lg">Formas de pagamento</Heading>
-                  </HStack>
-                  <Checkbox my={2} value="card">
-                    Cartão de Crédito
-                  </Checkbox>
-                  <Checkbox my={2} value="cash">
-                    Dinheiro
-                  </Checkbox>
-                  <Checkbox my={2} value="boleto">
-                    Boleto
-                  </Checkbox>
-                  <Checkbox my={2} value="deposit">
-                    Depósito bancário
-                  </Checkbox>
-                  <Checkbox my={2} value="pix">
-                    Pix
-                  </Checkbox>
-                </Checkbox.Group>
-              )}
-            />
+            <Checkbox.Group
+              mt={8}
+              onChange={(method) => setPayMethods(method)}
+              value={payMethods}
+            >
+              <HStack alignItems="baseline">
+                <Heading fontSize="lg">Formas de pagamento</Heading>
+              </HStack>
+              <Checkbox my={2} value="card">
+                Cartão de Crédito
+              </Checkbox>
+              <Checkbox my={2} value="cash">
+                Dinheiro
+              </Checkbox>
+              <Checkbox my={2} value="boleto">
+                Boleto
+              </Checkbox>
+              <Checkbox my={2} value="deposit">
+                Depósito bancário
+              </Checkbox>
+              <Checkbox my={2} value="pix">
+                Pix
+              </Checkbox>
+            </Checkbox.Group>
           </VStack>
 
           <HStack mt="10" w="full" justifyContent={"space-between"}>

@@ -24,7 +24,7 @@ type AppRoutes = {
   home: undefined
   adPreview: { adPreview: AdPreviewDTO } | undefined
   adDetails: undefined
-  newAdform: undefined
+  newAdform: { adDetails: AdDTO } | undefined
   ownAds: undefined
   logout: undefined
   ownAdDetails: { adId: string }

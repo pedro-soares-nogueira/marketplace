@@ -27,7 +27,7 @@ type AppRoutes = {
   newAdform: undefined
   ownAds: undefined
   logout: undefined
-  ownAdDetails: { adDetails: AdDTO } | undefined
+  ownAdDetails: { adId: string }
 }
 
 export type AppNavigatorRoutesProps = BottomTabNavigationProp<AppRoutes>

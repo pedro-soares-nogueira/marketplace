@@ -48,7 +48,7 @@ const AdsCard = ({ owner, adDetails }: AdsCardProps) => {
           style={adDetails?.is_active === false && { opacity: 0.4 }}
         />
         {disabled && (
-          <Center mt={10}>
+          <Center mt={4}>
             <Heading>Desativado</Heading>
           </Center>
         )}
@@ -84,7 +84,11 @@ const AdsCard = ({ owner, adDetails }: AdsCardProps) => {
         )}
 
         {owner ? (
-          <TouchableOpacity onPress={() => navigation.navigate("ownAdDetails")}>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("ownAdDetails", { adId: adDetails.id })
+            }
+          >
             <Icon
               as={Ionicons}
               name="arrow-forward"

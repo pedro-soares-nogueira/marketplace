@@ -37,6 +37,7 @@ import { AdPreviewDTO } from "../models/AdPreviewDTO"
 import { AppError } from "../utils/AppError"
 import { api } from "../services/api"
 import { AdDTO } from "../models/AdDTO"
+import { AdImageDTO } from "../models/AdImageDTO"
 
 type FormAdProps = {
   title: string
@@ -48,7 +49,7 @@ type FormAdProps = {
 }
 
 type RouteParams = {
-  adDetails?: AdDTO
+  adDetails?: AdDTO | undefined
 }
 
 const FormAdSchema = yup.object({
@@ -63,12 +64,13 @@ const NewAdform = () => {
   const navigation = useNavigation<AppNavigatorRoutesProps>()
   const [isLoading, setIsLoading] = useState(false)
   const [imagesUri, setImagesUri] = useState<string[]>([])
+  const [adDetailsImages, setAdDetailsImages] = useState<AdImageDTO[]>()
   const toast = useToast()
 
   const route = useRoute()
   const { adDetails } = route.params as RouteParams
 
-  console.log(typeof adDetails?.price.toString())
+  console.log(adDetails?.product_images)
 
   const payMethodsKey = adDetails?.payment_methods.map(({ key }) => key)
   const [payMethods, setPayMethods] = useState(payMethodsKey)
@@ -160,37 +162,65 @@ const NewAdform = () => {
           </Text>
 
           <Box mt={8} flexDirection={"row"}>
-            <HStack>
-              {imagesUri.length > 0 &&
-                imagesUri.map((imageUri) => (
-                  <Box key={imageUri}>
-                    <ImagePreview uri={imageUri} />
+            {adDetails ? (
+              adDetailsImages?.map((image) => (
+                <Box key={image.id}>
+                  <ImagePreview uri={image.path} />
 
-                    <Pressable
-                      onPress={() => removeImage(imageUri)}
-                      position="absolute"
-                      mt={5}
-                      ml={1}
-                      w={5}
-                      h={5}
-                      rounded="full"
-                      bgColor="gray.400"
-                      alignItems="center"
-                      justifyContent="center"
-                    >
-                      <Icon
-                        as={AntDesign}
-                        name="close"
-                        color="gray.800"
-                        size={3}
-                      />
-                    </Pressable>
-                  </Box>
-                ))}
-              {imagesUri.length < 3 && (
-                <ImageHandler onPress={handleSelectImage} />
-              )}
-            </HStack>
+                  <Pressable
+                    onPress={() => removeImage(image.path)}
+                    position="absolute"
+                    mt={5}
+                    ml={1}
+                    w={5}
+                    h={5}
+                    rounded="full"
+                    bgColor="gray.400"
+                    alignItems="center"
+                    justifyContent="center"
+                  >
+                    <Icon
+                      as={AntDesign}
+                      name="close"
+                      color="gray.800"
+                      size={3}
+                    />
+                  </Pressable>
+                </Box>
+              ))
+            ) : (
+              <HStack>
+                {imagesUri.length > 0 &&
+                  imagesUri.map((imageUri) => (
+                    <Box key={imageUri}>
+                      <ImagePreview uri={imageUri} />
+
+                      <Pressable
+                        onPress={() => removeImage(imageUri)}
+                        position="absolute"
+                        mt={5}
+                        ml={1}
+                        w={5}
+                        h={5}
+                        rounded="full"
+                        bgColor="gray.400"
+                        alignItems="center"
+                        justifyContent="center"
+                      >
+                        <Icon
+                          as={AntDesign}
+                          name="close"
+                          color="gray.800"
+                          size={3}
+                        />
+                      </Pressable>
+                    </Box>
+                  ))}
+                {imagesUri.length < 3 && (
+                  <ImageHandler onPress={handleSelectImage} />
+                )}
+              </HStack>
+            )}
           </Box>
 
           <VStack mt={10}>

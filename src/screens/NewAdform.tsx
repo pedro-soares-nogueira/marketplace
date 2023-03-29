@@ -68,7 +68,7 @@ const NewAdform = () => {
   const route = useRoute()
   const { adDetails } = route.params as RouteParams
 
-  console.log(adDetails)
+  console.log(typeof adDetails?.price.toString())
 
   const payMethodsKey = adDetails?.payment_methods.map(({ key }) => key)
   const [payMethods, setPayMethods] = useState(payMethodsKey)
@@ -229,6 +229,7 @@ const NewAdform = () => {
               name="price"
               render={({ field: { onChange, value } }) => (
                 <Input
+                  value={value.toString()}
                   placeholder="Preco do produto"
                   onChangeText={onChange}
                   InputLeftElement={

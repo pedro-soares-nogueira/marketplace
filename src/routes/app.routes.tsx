@@ -17,6 +17,8 @@ import Loading from "../components/Loading"
 import { MaterialIcons } from "@expo/vector-icons"
 import { AdPreviewDTO } from "../models/AdPreviewDTO"
 import AdPreview from "../screens/AdPreview"
+import OwnAdDetails from "../screens/OwnAdDetails"
+import { AdDTO } from "../models/AdDTO"
 
 type AppRoutes = {
   home: undefined
@@ -25,6 +27,7 @@ type AppRoutes = {
   newAdform: undefined
   ownAds: undefined
   logout: undefined
+  ownAdDetails: { adDetails: AdDTO } | undefined
 }
 
 export type AppNavigatorRoutesProps = BottomTabNavigationProp<AppRoutes>
@@ -84,6 +87,12 @@ const AppRoutes = () => {
       <Screen
         name="adPreview"
         component={AdPreview}
+        options={{ tabBarButton: () => null, tabBarStyle: { display: "none" } }}
+      />
+
+      <Screen
+        name="ownAdDetails"
+        component={OwnAdDetails}
         options={{ tabBarButton: () => null, tabBarStyle: { display: "none" } }}
       />
 

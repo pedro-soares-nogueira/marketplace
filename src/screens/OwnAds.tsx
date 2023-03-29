@@ -94,7 +94,9 @@ const OwnAds = () => {
             <FlatList
               data={filteredList}
               keyExtractor={(item) => item.id}
-              renderItem={({ item }) => <AdsCard type="used" key={item.id} />}
+              renderItem={({ item }) => (
+                <AdsCard owner key={item.id} adDetails={item} />
+              )}
               showsVerticalScrollIndicator={false}
               contentContainerStyle={[filteredList.length === 0 && { flex: 1 }]}
               ListEmptyComponent={() => (

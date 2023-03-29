@@ -160,7 +160,7 @@ const OwnAdDetails = () => {
           <MainHeader title="Anúncio" />
 
           <Pressable
-            onPress={() => navigation.navigate("newAdform", { adDetails: ad })}
+            onPress={() => navigation.navigate("editAdform", { adDetails: ad })}
             flexDirection="row"
             justifyContent={"center"}
             alignItems="center"

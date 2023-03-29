@@ -47,6 +47,11 @@ type FormAdProps = {
   exchange: boolean
   payMethods: string[]
 }
+
+type RouteParams = {
+  adDetails?: AdDTO | undefined
+}
+
 const FormAdSchema = yup.object({
   title: yup.string().min(4, "Nome é obrigatório"),
   price: yup.number().min(4, "Valor é  obrigatório"),
@@ -55,13 +60,20 @@ const FormAdSchema = yup.object({
   exchange: yup.boolean(),
 })
 
-const NewAdform = () => {
+const EditAdform = () => {
   const navigation = useNavigation<AppNavigatorRoutesProps>()
   const [isLoading, setIsLoading] = useState(false)
   const [imagesUri, setImagesUri] = useState<string[]>([])
-  const [payMethods, setPayMethods] = useState<string[]>([])
-
+  const [adDetailsImages, setAdDetailsImages] = useState<AdImageDTO[]>()
   const toast = useToast()
+
+  const route = useRoute()
+  const { adDetails } = route.params as RouteParams
+
+  console.log(adDetails?.product_images)
+
+  const payMethodsKey = adDetails?.payment_methods.map(({ key }) => key)
+  const [payMethods, setPayMethods] = useState(payMethodsKey)
 
   const {
     control,
@@ -69,6 +81,13 @@ const NewAdform = () => {
     formState: { errors },
   } = useForm<FormAdProps>({
     resolver: yupResolver(FormAdSchema),
+    defaultValues: {
+      title: adDetails?.name,
+      description: adDetails?.description,
+      isNew: adDetails?.is_new,
+      exchange: adDetails?.accept_trade,
+      price: adDetails?.price,
+    },
   })
 
   const handleSelectImage = async () => {
@@ -95,8 +114,21 @@ const NewAdform = () => {
 
   const handlePreview = (data: FormAdProps) => {
     setIsLoading(true)
-
-    const { title, description, price, exchange, isNew } = data
+    const { title, description, payMethods, price, exchange, isNew } = data
+    if (
+      title.length === 0 ||
+      description.length === 0 ||
+      price === 0 ||
+      imagesUri.length === 0 ||
+      payMethods.length === 0
+    ) {
+      return toast.show({
+        title:
+          "Você esqueceu de preencher algum campo ou de escolher uma imagem.",
+        placement: "top",
+        bgColor: "red.500",
+      })
+    }
 
     const adPreview: AdPreviewDTO = {
       name: title,
@@ -107,7 +139,6 @@ const NewAdform = () => {
       accept_trade: exchange,
       payment_methods: payMethods,
     }
-
     setIsLoading(false)
     navigation.navigate("adPreview", { adPreview })
   }
@@ -118,8 +149,11 @@ const NewAdform = () => {
       showsVerticalScrollIndicator={false}
     >
       <Box flex={1} mb="10">
-        <MainHeader title="Criar anúncio" isNewAdForm />
-
+        {adDetails ? (
+          <MainHeader title="Edite o anúncio" isNewAdForm />
+        ) : (
+          <MainHeader title="Criar anúncio" isNewAdForm />
+        )}
         <VStack px={6}>
           <Heading mb={2}>Imagens</Heading>
           <Text maxW={370}>
@@ -128,37 +162,35 @@ const NewAdform = () => {
           </Text>
 
           <Box mt={8} flexDirection={"row"}>
-            <HStack>
-              {imagesUri.length > 0 &&
-                imagesUri.map((imageUri) => (
-                  <Box key={imageUri}>
-                    <ImagePreview uri={imageUri} />
+            {adDetails ? (
+              adDetailsImages?.map((image) => (
+                <Box key={image.id}>
+                  <ImagePreview uri={image.path} />
 
-                    <Pressable
-                      onPress={() => removeImage(imageUri)}
-                      position="absolute"
-                      mt={5}
-                      ml={1}
-                      w={5}
-                      h={5}
-                      rounded="full"
-                      bgColor="gray.400"
-                      alignItems="center"
-                      justifyContent="center"
-                    >
-                      <Icon
-                        as={AntDesign}
-                        name="close"
-                        color="gray.800"
-                        size={3}
-                      />
-                    </Pressable>
-                  </Box>
-                ))}
-              {imagesUri.length < 3 && (
-                <ImageHandler onPress={handleSelectImage} />
-              )}
-            </HStack>
+                  <Pressable
+                    onPress={() => removeImage(image.path)}
+                    position="absolute"
+                    mt={5}
+                    ml={1}
+                    w={5}
+                    h={5}
+                    rounded="full"
+                    bgColor="gray.400"
+                    alignItems="center"
+                    justifyContent="center"
+                  >
+                    <Icon
+                      as={AntDesign}
+                      name="close"
+                      color="gray.800"
+                      size={3}
+                    />
+                  </Pressable>
+                </Box>
+              ))
+            ) : (
+              <></>
+            )}
           </Box>
 
           <VStack mt={10}>
@@ -169,6 +201,7 @@ const NewAdform = () => {
               name="title"
               render={({ field: { onChange, value } }) => (
                 <Input
+                  value={value}
                   placeholder="Nome do produto"
                   onChangeText={onChange}
                   errorMessage={errors.title?.message}
@@ -180,6 +213,7 @@ const NewAdform = () => {
               name="description"
               render={({ field: { onChange, value } }) => (
                 <TextAreaInput
+                  value={value}
                   placeholder="Dê uma descrição ao produto"
                   onChangeText={onChange}
                   errorMessage={errors.description?.message}
@@ -195,6 +229,7 @@ const NewAdform = () => {
               name="price"
               render={({ field: { onChange, value } }) => (
                 <Input
+                  value={value.toString()}
                   placeholder="Preco do produto"
                   onChangeText={onChange}
                   InputLeftElement={
@@ -289,4 +324,4 @@ const NewAdform = () => {
   )
 }
 
-export default NewAdform
+export default EditAdform

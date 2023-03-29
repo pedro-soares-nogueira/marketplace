@@ -27,6 +27,7 @@ import { priceFormatter } from "../utils/formatter"
 import { AppNavigatorRoutesProps } from "../routes/app.routes"
 import { AppError } from "../utils/AppError"
 import { useAds } from "../contexts/AdContext"
+import { PayMethod } from "../components/PayMethod"
 
 type RouteParams = {
   adPreview: AdPreviewDTO
@@ -173,68 +174,7 @@ const AdPreview = () => {
           <VStack mt={5}>
             <Heading fontSize={"lg"}>Meios de pagamento</Heading>
             {adPreview.payment_methods.map((item) => (
-              <>
-                {item === "card" && (
-                  <HStack alignItems={"center"} pt={3} key={item}>
-                    <Icon
-                      as={FontAwesome5}
-                      name="money-check-alt"
-                      color="gray.700"
-                      size={6}
-                      mr={2}
-                    />
-                    <Text fontSize={"lg"}>Cartão de Crédito</Text>
-                  </HStack>
-                )}
-                {item === "cash" && (
-                  <HStack alignItems={"center"} pt={3} key={item}>
-                    <Icon
-                      as={FontAwesome}
-                      name="money"
-                      color="gray.700"
-                      size={6}
-                      mr={2}
-                    />
-                    <Text fontSize={"lg"}>Dinheiro</Text>
-                  </HStack>
-                )}
-                {item === "boleto" && (
-                  <HStack alignItems={"center"} pt={5} key={item}>
-                    <Icon
-                      as={AntDesign}
-                      name="barcode"
-                      color="gray.700"
-                      size={6}
-                      mr={2}
-                    />
-                    <Text fontSize={"lg"}>Boleto</Text>
-                  </HStack>
-                )}
-                {item === "deposit" && (
-                  <HStack alignItems={"center"} pt={5} key={item}>
-                    <Icon
-                      as={AntDesign}
-                      name="barcode"
-                      color="gray.700"
-                      size={6}
-                      mr={2}
-                    />
-                    <Text fontSize={"lg"}>Depósito bancário</Text>
-                  </HStack>
-                )}
-                {item === "pix" && (
-                  <HStack alignItems={"center"} pt={3} key={item}>
-                    <Icon
-                      as={AntDesign}
-                      name="qrcode"
-                      color="gray.700"
-                      size={6}
-                      mr={2}
-                    />
-                    <Text fontSize={"lg"}>PIX</Text>
-                  </HStack>
-                )}
-              </>
+              <PayMethod type={item} key={item} />
             ))}
           </VStack>
         </VStack>

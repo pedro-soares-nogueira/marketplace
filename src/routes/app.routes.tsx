@@ -19,12 +19,14 @@ import { AdPreviewDTO } from "../models/AdPreviewDTO"
 import AdPreview from "../screens/AdPreview"
 import OwnAdDetails from "../screens/OwnAdDetails"
 import { AdDTO } from "../models/AdDTO"
+import EditAdform from "../screens/EditAdform"
 
 type AppRoutes = {
   home: undefined
   adPreview: { adPreview: AdPreviewDTO } | undefined
   adDetails: undefined
-  newAdform: { adDetails: AdDTO } | undefined
+  newAdform: undefined
+  editAdform: { adDetails: AdDTO }
   ownAds: undefined
   logout: undefined
   ownAdDetails: { adId: string }
@@ -81,6 +83,12 @@ const AppRoutes = () => {
       <Screen
         name="newAdform"
         component={NewAdform}
+        options={{ tabBarButton: () => null, tabBarStyle: { display: "none" } }}
+      />
+
+      <Screen
+        name="editAdform"
+        component={EditAdform}
         options={{ tabBarButton: () => null, tabBarStyle: { display: "none" } }}
       />
 

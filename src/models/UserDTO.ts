@@ -1,4 +1,4 @@
-import { ProductDTO } from "./ProductDTO"
+import { AdDTO } from "./AdDTO"
 
 export type UserDTO = {
   id: string
@@ -6,5 +6,5 @@ export type UserDTO = {
   email: string
   tel: string
   avatar: string
-  products: ProductDTO[]
+  products: AdDTO[]
 }

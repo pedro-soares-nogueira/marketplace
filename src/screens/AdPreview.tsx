@@ -26,12 +26,14 @@ import { api } from "../services/api"
 import { priceFormatter } from "../utils/formatter"
 import { AppNavigatorRoutesProps } from "../routes/app.routes"
 import { AppError } from "../utils/AppError"
+import { useAds } from "../contexts/AdContext"
 
 type RouteParams = {
   adPreview: AdPreviewDTO
 }
 
 const AdPreview = () => {
+  const { createAd } = useAds()
   const { user } = useAuth()
   const route = useRoute()
   const [isLoading, setIsLoading] = useState(false)
@@ -47,28 +49,7 @@ const AdPreview = () => {
     try {
       setIsLoading(true)
 
-      const {
-        imagesUri,
-        name,
-        price,
-        description,
-        is_new,
-        accept_trade,
-        payment_methods,
-      } = adPreview
-
-      const response = await api.post("/products", {
-        name,
-        description,
-        price,
-        is_new,
-        accept_trade,
-        payment_methods,
-        imagesUri,
-      })
-
-      const { id } = response.data
-      await uploadImages(id, imagesUri)
+      await createAd(adPreview)
 
       toast.show({
         title: "Anúncio criado com sucesso!",
@@ -81,7 +62,7 @@ const AdPreview = () => {
       const isAppError = error instanceof AppError
       const title = isAppError
         ? error.message
-        : "Não foi possivel criar o anúncio."
+        : "Não foi possivel criar o anúncio..."
 
       toast.show({
         title,
@@ -90,33 +71,6 @@ const AdPreview = () => {
       })
     } finally {
       setIsLoading(false)
-    }
-  }
-
-  const uploadImages = async (productId: string, images: string[]) => {
-    try {
-      const imageData = new FormData()
-      imageData.append("product_id", productId)
-
-      images.forEach((item) => {
-        const imageExtension = item.split(".").pop()
-
-        const imageFile = {
-          name: `${user.name}.${imageExtension}`,
-          uri: item,
-          type: `image/${imageExtension}`,
-        } as any
-
-        imageData.append("images", imageFile)
-      })
-
-      await api.post("/products/images/", imageData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
-    } catch (error) {
-      throw error
     }
   }
 
@@ -145,7 +99,7 @@ const AdPreview = () => {
             horizontal
             pagingEnabled
             renderItem={({ item }) => (
-              <Box bgColor={"gray.700"} w={width} h="400px">
+              <Box bgColor={"gray.700"} w={width} h="400px" key={item}>
                 <Image
                   w={width}
                   h="400px"
@@ -233,7 +187,7 @@ const AdPreview = () => {
                   </HStack>
                 )}
                 {item === "cash" && (
-                  <HStack alignItems={"center"} pt={3}>
+                  <HStack alignItems={"center"} pt={3} key={item}>
                     <Icon
                       as={FontAwesome}
                       name="money"
@@ -245,7 +199,7 @@ const AdPreview = () => {
                   </HStack>
                 )}
                 {item === "boleto" && (
-                  <HStack alignItems={"center"} pt={5}>
+                  <HStack alignItems={"center"} pt={5} key={item}>
                     <Icon
                       as={AntDesign}
                       name="barcode"
@@ -257,7 +211,7 @@ const AdPreview = () => {
                   </HStack>
                 )}
                 {item === "deposit" && (
-                  <HStack alignItems={"center"} pt={5}>
+                  <HStack alignItems={"center"} pt={5} key={item}>
                     <Icon
                       as={AntDesign}
                       name="barcode"
@@ -269,7 +223,7 @@ const AdPreview = () => {
                   </HStack>
                 )}
                 {item === "pix" && (
-                  <HStack alignItems={"center"} pt={3}>
+                  <HStack alignItems={"center"} pt={3} key={item}>
                     <Icon
                       as={AntDesign}
                       name="qrcode"

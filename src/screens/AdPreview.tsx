@@ -6,11 +6,11 @@ import {
   Icon,
   Image,
   Text,
+  useToast,
   VStack,
 } from "native-base"
 import React, { useState } from "react"
-import { Dimensions, FlatList, ScrollView, View } from "react-native"
-import MainHeader from "../components/MainHeader"
+import { Dimensions, FlatList, ScrollView } from "react-native"
 import UserPhoto from "../components/UserPhoto"
 import Button from "../components/Button"
 import {
@@ -25,6 +25,7 @@ import { useAuth } from "../contexts/AuthContext"
 import { api } from "../services/api"
 import { priceFormatter } from "../utils/formatter"
 import { AppNavigatorRoutesProps } from "../routes/app.routes"
+import { AppError } from "../utils/AppError"
 
 type RouteParams = {
   adPreview: AdPreviewDTO
@@ -32,14 +33,93 @@ type RouteParams = {
 
 const AdPreview = () => {
   const { user } = useAuth()
-  const [data, setData] = useState(["#ff6633", "#ffb399", "#3366e6", "#b34d4d"])
   const route = useRoute()
+  const [isLoading, setIsLoading] = useState(false)
+  const toast = useToast()
+
   const navigation = useNavigation<AppNavigatorRoutesProps>()
 
   const { width } = Dimensions.get("window")
 
   const { adPreview } = route.params as RouteParams
-  console.log(adPreview.imagesUri)
+
+  const handlePublishAd = async () => {
+    try {
+      setIsLoading(true)
+
+      const {
+        imagesUri,
+        name,
+        price,
+        description,
+        is_new,
+        accept_trade,
+        payment_methods,
+      } = adPreview
+
+      const response = await api.post("/products", {
+        name,
+        description,
+        price,
+        is_new,
+        accept_trade,
+        payment_methods,
+        imagesUri,
+      })
+
+      const { id } = response.data
+      await uploadImages(id, imagesUri)
+
+      toast.show({
+        title: "Anúncio criado com sucesso!",
+        placement: "top",
+        bgColor: "green.500",
+      })
+
+      navigation.navigate("ownAds")
+    } catch (error) {
+      const isAppError = error instanceof AppError
+      const title = isAppError
+        ? error.message
+        : "Não foi possivel criar o anúncio."
+
+      toast.show({
+        title,
+        placement: "top",
+        bgColor: "red.500",
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const uploadImages = async (productId: string, images: string[]) => {
+    try {
+      const imageData = new FormData()
+      imageData.append("product_id", productId)
+
+      images.forEach((item) => {
+        const imageExtension = item.split(".").pop()
+
+        const imageFile = {
+          name: `${user.name}.${imageExtension}`,
+          uri: item,
+          type: `image/${imageExtension}`,
+        } as any
+
+        imageData.append("images", imageFile)
+      })
+
+      await api.post("/products/images/", imageData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+    } catch (error) {
+      throw error
+    }
+  }
+
   return (
     <ScrollView
       contentContainerStyle={{ flexGrow: 1 }}
@@ -229,6 +309,7 @@ const AdPreview = () => {
           />
           <Button
             title="Puplicar"
+            onPress={handlePublishAd}
             px={12}
             leftIcon={
               <Icon as={FontAwesome} name="tag" color="white" size={6} />

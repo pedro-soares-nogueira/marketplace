@@ -50,9 +50,9 @@ const FormAdSchema = yup.object({
 
 const NewAdform = () => {
   const navigation = useNavigation<AppNavigatorRoutesProps>()
+  const [isLoading, setIsLoading] = useState(false)
   const [imagesUri, setImagesUri] = useState<string[]>([])
   const toast = useToast()
-  console.log(imagesUri)
 
   const {
     control,
@@ -85,18 +85,8 @@ const NewAdform = () => {
   }
 
   const handlePreview = (data: FormAdProps) => {
+    setIsLoading(true)
     const { title, description, payMethods, price, exchange, isNew } = data
-
-    const adPreview: AdPreviewDTO = {
-      name: title,
-      description,
-      price: price,
-      imagesUri,
-      is_new: isNew,
-      accept_trade: exchange,
-      payment_methods: payMethods,
-    }
-
     if (
       title.length === 0 ||
       description.length === 0 ||
@@ -111,6 +101,17 @@ const NewAdform = () => {
         bgColor: "red.500",
       })
     }
+
+    const adPreview: AdPreviewDTO = {
+      name: title,
+      description,
+      price: price,
+      imagesUri,
+      is_new: isNew,
+      accept_trade: exchange,
+      payment_methods: payMethods,
+    }
+    setIsLoading(false)
     navigation.navigate("adPreview", { adPreview })
   }
 
@@ -208,7 +209,7 @@ const NewAdform = () => {
                     />
                   }
                   keyboardType="numeric"
-                  errorMessage={errors.title?.message}
+                  errorMessage={errors.price?.message}
                 />
               )}
             />
@@ -288,6 +289,7 @@ const NewAdform = () => {
               px={16}
               title="Avançar"
               onPress={handleSubmit(handlePreview)}
+              isLoading={isLoading}
             />
           </HStack>
         </VStack>

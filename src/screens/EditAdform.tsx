@@ -2,6 +2,7 @@ import {
   Box,
   Center,
   Checkbox,
+  CloseIcon,
   FormControl,
   Heading,
   HStack,
@@ -38,6 +39,7 @@ import { AppError } from "../utils/AppError"
 import { api } from "../services/api"
 import { AdDTO } from "../models/AdDTO"
 import { AdImageDTO } from "../models/AdImageDTO"
+import { useAds } from "../contexts/AdContext"
 
 type FormAdProps = {
   title: string
@@ -49,7 +51,7 @@ type FormAdProps = {
 }
 
 type RouteParams = {
-  adDetails?: AdDTO | undefined
+  adDetails?: AdDTO
 }
 
 const FormAdSchema = yup.object({
@@ -61,19 +63,24 @@ const FormAdSchema = yup.object({
 })
 
 const EditAdform = () => {
-  const navigation = useNavigation<AppNavigatorRoutesProps>()
-  const [isLoading, setIsLoading] = useState(false)
-  const [imagesUri, setImagesUri] = useState<string[]>([])
-  const [adDetailsImages, setAdDetailsImages] = useState<AdImageDTO[]>()
-  const toast = useToast()
-
+  const { updateAd } = useAds()
   const route = useRoute()
   const { adDetails } = route.params as RouteParams
 
-  console.log(adDetails?.product_images)
+  const navigation = useNavigation<AppNavigatorRoutesProps>()
+  const [isLoading, setIsLoading] = useState(false)
+  const [newImages, setNewImages] = useState<string[]>([])
+
+  const [images, setImages] = useState<AdImageDTO[] | undefined>(
+    adDetails?.product_images
+  )
+
+  const toast = useToast()
 
   const payMethodsKey = adDetails?.payment_methods.map(({ key }) => key)
   const [payMethods, setPayMethods] = useState(payMethodsKey)
+
+  const [deletedImages, setDeletedImages] = useState<string[]>([])
 
   const {
     control,
@@ -103,44 +110,51 @@ const EditAdform = () => {
     }
 
     if (imageSelected.assets[0].uri) {
-      setImagesUri([...imagesUri, imageSelected.assets[0].uri])
+      setNewImages([...newImages, imageSelected.assets[0].uri])
     }
   }
-
-  const removeImage = (uri: string) => {
-    const imagesFiltered = imagesUri.filter((imageUri) => imageUri !== uri)
-    setImagesUri(imagesFiltered)
+  function removeImage(item: string) {
+    setDeletedImages([...deletedImages, item])
+    setImages(images?.filter((image) => image.id !== item))
+    setNewImages(newImages.filter((image) => image !== item))
   }
+  const handleUpdateAd = async (data: FormAdProps) => {
+    const newAd: AdPreviewDTO = {
+      name: data.title,
+      description: data.description,
+      price: Number(data.price),
+      is_new: data.isNew,
+      accept_trade: data.exchange,
+      payment_methods: payMethods!,
+      imagesUri: newImages,
+    }
 
-  const handlePreview = (data: FormAdProps) => {
-    setIsLoading(true)
-    const { title, description, payMethods, price, exchange, isNew } = data
-    if (
-      title.length === 0 ||
-      description.length === 0 ||
-      price === 0 ||
-      imagesUri.length === 0 ||
-      payMethods.length === 0
-    ) {
-      return toast.show({
-        title:
-          "Você esqueceu de preencher algum campo ou de escolher uma imagem.",
+    try {
+      setIsLoading(true)
+      console.log(newAd, adDetails!.id, deletedImages, images!)
+      await updateAd(newAd, adDetails!.id, deletedImages, images!)
+
+      toast.show({
+        title: "Anúncio atualizado com sucesso!",
+        placement: "top",
+        bgColor: "green.500",
+      })
+
+      navigation.goBack()
+    } catch (error) {
+      const isAppError = error instanceof AppError
+      const title = isAppError
+        ? error.message
+        : "Não foi possivel atualizar o anúncio."
+
+      toast.show({
+        title,
         placement: "top",
         bgColor: "red.500",
       })
+    } finally {
+      setIsLoading(false)
     }
-
-    const adPreview: AdPreviewDTO = {
-      name: title,
-      description,
-      price: price,
-      imagesUri,
-      is_new: isNew,
-      accept_trade: exchange,
-      payment_methods: payMethods,
-    }
-    setIsLoading(false)
-    navigation.navigate("adPreview", { adPreview })
   }
 
   return (
@@ -162,34 +176,52 @@ const EditAdform = () => {
           </Text>
 
           <Box mt={8} flexDirection={"row"}>
-            {adDetails ? (
-              adDetailsImages?.map((image) => (
-                <Box key={image.id}>
-                  <ImagePreview uri={image.path} />
+            {newImages.map((image) => (
+              <Box key={image}>
+                <ImagePreview uri={image} />
 
-                  <Pressable
-                    onPress={() => removeImage(image.path)}
-                    position="absolute"
-                    mt={5}
-                    ml={1}
-                    w={5}
-                    h={5}
-                    rounded="full"
-                    bgColor="gray.400"
-                    alignItems="center"
-                    justifyContent="center"
-                  >
-                    <Icon
-                      as={AntDesign}
-                      name="close"
-                      color="gray.800"
-                      size={3}
-                    />
-                  </Pressable>
-                </Box>
-              ))
-            ) : (
-              <></>
+                <Pressable
+                  onPress={() => removeImage(image)}
+                  position="absolute"
+                  mt={5}
+                  ml={1}
+                  w={5}
+                  h={5}
+                  rounded="full"
+                  bgColor="gray.600"
+                  alignItems="center"
+                  justifyContent="center"
+                >
+                  <CloseIcon size={2} color="white" />
+                </Pressable>
+              </Box>
+            ))}
+
+            {images?.map((image) => (
+              <Box key={image.id}>
+                <ImagePreview
+                  uri={`${api.defaults.baseURL}/images/${image.path}`}
+                />
+
+                <Pressable
+                  onPress={() => removeImage(image.id)}
+                  position="absolute"
+                  mt={5}
+                  ml={1}
+                  w={5}
+                  h={5}
+                  rounded="full"
+                  bgColor="gray.600"
+                  alignItems="center"
+                  justifyContent="center"
+                >
+                  <CloseIcon size={2} color="white" />
+                </Pressable>
+              </Box>
+            ))}
+
+            {images!.length + newImages.length < 3 && (
+              <ImageHandler onPress={handleSelectImage} />
             )}
           </Box>
 
@@ -314,7 +346,7 @@ const EditAdform = () => {
             <Button
               px={16}
               title="Avançar"
-              onPress={handleSubmit(handlePreview)}
+              onPress={handleSubmit(handleUpdateAd)}
               isLoading={isLoading}
             />
           </HStack>

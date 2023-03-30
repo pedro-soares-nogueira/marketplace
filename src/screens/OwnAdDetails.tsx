@@ -250,10 +250,7 @@ const OwnAdDetails = () => {
             </HStack>
 
             <Text mt={4} fontSize={16}>
-              Cras congue cursus in tortor sagittis placerat nunc, tellus arcu.
-              Vitae ante leo eget maecenas urna mattis cursus. Mauris metus amet
-              nibh mauris mauris accumsan, euismod. Aenean leo nunc, purus
-              iaculis in aliquam.
+              {ad.description}
             </Text>
 
             <HStack alignItems={"center"} pt={5}>

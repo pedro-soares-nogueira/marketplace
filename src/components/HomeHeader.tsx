@@ -6,9 +6,11 @@ import { MaterialIcons } from "@expo/vector-icons"
 import defaultImageUserPhoto from "../assets/avatar.png"
 import { useNavigation } from "@react-navigation/native"
 import { AppNavigatorRoutesProps } from "../routes/app.routes"
+import { useAuth } from "../contexts/AuthContext"
+import { api } from "../services/api"
 
 const HomeHeader = () => {
-  const [userPhoto, setUserPhoto] = useState("")
+  const { user } = useAuth()
   const navigation = useNavigation<AppNavigatorRoutesProps>()
 
   return (
@@ -20,9 +22,9 @@ const HomeHeader = () => {
       justifyContent={"space-between"}
     >
       <Box flexDirection={"row"} alignItems="center" justifyContent={"center"}>
-        {userPhoto ? (
+        {user.avatar ? (
           <UserPhoto
-            source={{ uri: userPhoto }}
+            source={{ uri: `${api.defaults.baseURL}/images/${user.avatar}` }}
             size={16}
             mr={3}
             alt="imagem do usuário"
@@ -38,7 +40,7 @@ const HomeHeader = () => {
         <Box>
           <Text fontSize={16}>Boas vindas, </Text>
           <Text fontWeight={"bold"} fontSize={20}>
-            Pedro
+            {user.name}
           </Text>
         </Box>
       </Box>

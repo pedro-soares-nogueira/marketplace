@@ -9,6 +9,7 @@ import { useAuth } from "./AuthContext"
 
 export type AdsDataProps = {
   userAds: AdDTO[]
+  ads: AdDTO[]
   createAd: (ads: AdPreviewDTO) => Promise<void>
   loadUserAds: () => Promise<void>
   isLoadingAds: boolean
@@ -18,6 +19,7 @@ export type AdsDataProps = {
     deletedImages: string[],
     oldImages: AdImageDTO[]
   ) => Promise<void>
+  loadAds: (query?: string) => Promise<void>
 }
 
 type AdsProvider = {
@@ -35,6 +37,30 @@ export function AdsContextProvider({ children }: AdsProvider) {
   const [userAds, setUserAds] = useState<AdDTO[]>([])
   const toast = useToast()
   const [isLoadingAds, setIsLoadingAds] = useState(false)
+  const [ads, setAds] = useState<AdDTO[]>([])
+
+  async function loadAds(query?: string) {
+    try {
+      setIsLoadingAds(true)
+      const response = await api.get(
+        query ? `products/?&query=${query}` : `products`
+      )
+      setAds(response.data)
+    } catch (error) {
+      const isAppError = error instanceof AppError
+      const title = isAppError
+        ? error.message
+        : "Não foi possível carregar os dados."
+
+      toast.show({
+        title,
+        placement: "top",
+        bgColor: "red.500",
+      })
+    } finally {
+      setIsLoadingAds(false)
+    }
+  }
 
   const createAd = async (ads: AdPreviewDTO) => {
     try {
@@ -181,7 +207,15 @@ export function AdsContextProvider({ children }: AdsProvider) {
 
   return (
     <AdsContext.Provider
-      value={{ createAd, loadUserAds, userAds, isLoadingAds, updateAd }}
+      value={{
+        createAd,
+        loadUserAds,
+        userAds,
+        isLoadingAds,
+        updateAd,
+        loadAds,
+        ads,
+      }}
     >
       {children}
     </AdsContext.Provider>
